@@ -24,7 +24,6 @@ from node import lnd
 from node import clightning
 
 from gateways import woo_webhook
-from invoice.price_feed import get_btc_value
 from gateways import satsale_webstore
 
 app = Flask(__name__)
