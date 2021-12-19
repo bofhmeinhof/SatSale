@@ -24,12 +24,12 @@ from node import lnd
 from node import clightning
 
 from gateways import woo_webhook
-from gateways import satsale_webstore
+from gateways import point_of_sale
 
 app = Flask(__name__)
 
-if config.webstore:
-    app = satsale_webstore.add_webstore_decorators(app)
+if config.point_of_sale:
+    app = point_of_sale.add_decorators(app)
 
 # Load an API key or create a new one
 if os.path.exists("SatSale_API_key"):
