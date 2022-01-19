@@ -1,5 +1,5 @@
-# SatSale needs to connect to your bitcoin/lnd node,
-# with the correct RPC port(s) as set in this config.
+# SatSale can connect to your own bitcoin/lnd/clightning node, with the correct connection details set in this config.
+# Otherwise, you can just use `payment_method=pseudonode` with a `zpub=...` (found in your wallet) to derive onchain addresses.
 
 # Connecting through local host (see below if connecting to remote node):
 host = "127.0.0.1"
@@ -31,8 +31,15 @@ api_key_path = "SatSale_API_key"
 # and a tor proxy, default 127.0.0.1:9050 (for Tor Browser use "127.0.0.1:9150")
 #tor_proxy = None
 
-#### Payment method ####
+##### Payment methods - Onchain & Lightning #####
+## Bitcoind node
 pay_method = "bitcoind"
+
+## Pseudo node
+# Switch payment_method to pseudonode if you want to derive addresses from a zpub instead of connecting to a node.
+# And enter your zpub. Derivation path is /0/0, xpubs untested.
+#pay_method = "pseudonode"
+#zpub = ""
 
 ## Lightning 
 # Switch payment_method to lnd if you want to use lightning payments instead. And uncomment lnd_dir.
