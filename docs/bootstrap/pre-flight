@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+set -e
+
+function in-virtualenv() {
+    if [[ "${VIRTUAL_ENV-}" != "" ]]; then
+        true; return
+    else
+        false; return
+    fi
+}
+
+function has-virtualenv() {
+    if test -d ./venv; then
+        true
+    else
+        false
+    fi
+}
+
+function create-virtualenv() {
+    python3 -m venv .venv
+}
+
+function activate-virtualenv() {
+    source .venv/bin/activate
+}
+
+function switch-directory() {
+    local source="${BASH_SOURCE:-${(%):-%x}}"
+
+    if [[ $source != /* ]]; then
+        source="$PWD/$source"
+    fi
+
+    local parent
+    parent="$(dirname "$source")"
+
+    if ! cd "$parent"; then
+        echo "Could not switch to $parent"
+        false; return
+    fi
+
+    if ! test -e './pre-flight'; then
+        echo "Could not switch to $parent"
+        false; return
+    fi
+
+    true; return
+}
+
+function is-supported-python() {
+    local major
+    major="$(python3 -c 'import sys; print(sys.version_info[0])')"
+
+    local minor
+    minor="$(python3 -c 'import sys; print(sys.version_info[1])')"
+
+    if (( major < 3 )); then
+        echo "Python $major.$minor is too old, please use 3.6+"
+        false; return
+    fi
+
+    if (( minor < 6 )); then
+        echo "Python $major.$minor is too old, please use 3.6+"
+        false; return
+    fi
+
+    true; return
+}
+
+function is-git-clean() {
+    if git diff-index --quiet HEAD; then
+        true
+    else
+        false
+    fi
+}
+
+function activate-dev-env() {
+
+    local gc='\e[0;32m'
+    local nc='\e[0m'
+
+    local doing='*'
+    local done="${gc}✓${nc}"
+
+    printf "Preparing development environment for SatSale...\n\n"
+
+    if ! is-supported-python; then
+        return
+    fi
+
+    if ! switch-directory; then
+        return
+    fi
+
+    if ! has-virtualenv; then
+        printf "%b Creating virtual environment\r" "$doing"
+        create-virtualenv
+        printf "%b Created virtual environment \n" "$done"
+    fi
+
+    if ! in-virtualenv; then
+        activate-virtualenv
+    fi
+
+    printf "%b Pulling latest commits\r" "$doing"
+    git pull -q
+    printf "%b Latest commits pulled \n" "$done"
+
+    printf "%b Updating requirements\r" "$doing"
+    pip install --upgrade pip -q
+    pip install -r requirements.txt -q
+    printf "%b Updated requirements \n\n" "$done"
+
+    printf "You're development environment is now ready"
+}
+
+activate-dev-env
