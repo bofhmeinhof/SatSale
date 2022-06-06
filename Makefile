@@ -23,5 +23,9 @@ integration-test: deps ## Runs playwright intg tests
 	@echo integration-tests done.
 
 deploy: deps ## Deploys Satsale
-    @echo Deploying SatSale...
-	    gunicorn -w 1 -b 0.0.0.0:8000 satsale:app
+        @echo Deploying SatSale...
+	gunicorn -w 1 -b 0.0.0.0:8000 satsale:app
+	
+clean_venv: ## Clears Virtualenv
+        virtualenv --clear
+	rm -rf .venv
