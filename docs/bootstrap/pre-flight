@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -e -x -o pipefail
 
 function in-virtualenv() {
     if [[ "${VIRTUAL_ENV-}" != "" ]]; then
